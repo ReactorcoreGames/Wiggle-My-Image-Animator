@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wiggle My Image Animator</title>
+  <meta name="description" content="Drop in any picture and watch it wiggle. Save it as a looping GIF or video and share it with your friends.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Wiggle My Image Animator">
+  <meta property="og:description" content="Drop in any picture and watch it wiggle. Save it as a looping GIF or video and share it with your friends.">
+  <!-- og:image needs an absolute URL. itch.io uses its own cover image for link previews; if this is ever hosted
+       on its own page (e.g. GitHub Pages), add <meta property="og:image" content="https://…/promo/cover.jpg">. -->
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍋</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Light/dark before first paint: the saved choice, else the device setting.
+    try { var savedTheme = JSON.parse(localStorage.getItem('wiggle-settings-v1') || '{}').theme; } catch (e) {}
+    document.documentElement.dataset.theme = savedTheme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1 class="title" id="title" aria-label="Wiggle My Image Animator">Wiggle My Image <span class="title-sub">Animator</span></h1>
+    <button class="icon-btn" id="themeBtn" type="button"></button>
+    <button class="icon-btn" id="helpBtn" type="button" aria-label="How does this work?">?</button>
+  </header>
+
+  <main class="app">
+    <!-- Stage: the wiggling picture -->
+    <section class="stage-card" id="stageCard">
+      <div class="stage" id="stage">
+        <div class="stage-frame" id="stageFrame" tabindex="0" aria-label="Your wiggling picture. Hold Space to see the original.">
+          <!-- glfx canvas gets inserted here by app.js -->
+          <canvas class="overlay" id="overlay" aria-hidden="true"></canvas>
+        </div>
+        <div class="stage-msg" id="stageMsg" hidden></div>
+        <div class="drop-hint" id="dropHint" aria-hidden="true"><span>Drop it like it's hot 🍋</span></div>
+      </div>
+      <div class="stage-bar">
+        <button class="btn btn-primary" id="pickBtn" type="button">📂 Choose a picture</button>
+        <span class="stage-tip" id="stageTip">…or drop / paste one anywhere. <b>Hold the picture</b> (or Space) to peek at the original.</span>
+      </div>
+      <input id="fileInput" type="file" accept="image/*" hidden>
+    </section>
+
+    <!-- Controls -->
+    <section class="panel" aria-label="Wiggle settings">
+      <div class="panel-head">
+        <h2>Wiggle style</h2>
+        <button class="btn btn-zest" id="surpriseBtn" type="button">🎲 Surprise me</button>
+      </div>
+      <div class="styles" id="styles" role="radiogroup" aria-label="Wiggle style"></div>
+
+      <div class="sliders">
+        <div class="slider">
+          <div class="slider-top"><label for="wiggle">Wiggliness</label><output id="wiggleOut"></output></div>
+          <input type="range" id="wiggle" min="0" max="100" value="40">
+        </div>
+        <div class="slider">
+          <div class="slider-top"><label for="wander">Wander</label><output id="wanderOut"></output></div>
+          <input type="range" id="wander" min="0" max="100" value="55">
+        </div>
+        <div class="slider">
+          <div class="slider-top"><label for="speed">Speed</label><output id="speedOut"></output></div>
+          <input type="range" id="speed" min="0" max="100" value="50">
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="row-label">Background</span>
+        <div class="swatches" id="swatches" role="radiogroup" aria-label="Background"></div>
+      </div>
+
+      <div class="row toggles">
+        <label class="toggle"><input type="checkbox" id="reverseChk"><span>Reverse</span></label>
+        <label class="toggle"><input type="checkbox" id="pathChk"><span>Show path</span></label>
+        <label class="toggle" title="Zooms the picture so no part of it ever wiggles off the edge"><input type="checkbox" id="fitChk"><span>Stay in frame</span></label>
+      </div>
+
+      <div class="save">
+        <div class="panel-head">
+          <h2>Save it</h2>
+          <div class="sizes" id="sizes" role="radiogroup" aria-label="Size"></div>
+        </div>
+        <div class="save-btns" id="saveBtns">
+          <button class="btn btn-primary btn-big" id="gifBtn" type="button">💾 Download GIF</button>
+          <button class="btn btn-leaf" id="videoBtn" type="button">🎬 Download video</button>
+          <button class="btn btn-zest" id="shareBtn" type="button" hidden>📤 Share</button>
+        </div>
+        <div class="save-progress" id="saveProgress" hidden>
+          <div class="bar" role="progressbar" aria-label="Saving" aria-valuemin="0" aria-valuemax="100" id="saveBar"><div class="bar-fill" id="saveFill"></div></div>
+          <div class="save-progress-row">
+            <span id="saveLabel">Making GIF…</span>
+            <button class="btn btn-small" id="cancelBtn" type="button">Cancel</button>
+          </div>
+        </div>
+        <p class="save-note" id="saveNote" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <footer class="foot">
+      Made with 🍋 by <a href="https://linktr.ee/reactorcore" target="_blank" rel="noopener">Reactorcore</a>
+      · <a href="https://reactorcore.itch.io/" target="_blank" rel="noopener">more toys</a>
+    </footer>
+  </main>
+
+
+  <!-- Help -->
+  <div class="modal" id="helpModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="icon-btn modal-x" id="helpClose" type="button" aria-label="Close">✕</button>
+      <h2 id="helpTitle">How to wiggle 🍋</h2>
+      <ol>
+        <li><b>Pick a picture.</b> Tap <i>Choose a picture</i>, drag one onto the page, or paste one with Ctrl+V.</li>
+        <li><b>Pick a wiggle style.</b> Each little drawing shows the path the wiggle travels along.</li>
+        <li><b>Tweak it.</b> <i>Wiggliness</i> is how twisty it gets, <i>Wander</i> is how far it roams, <i>Speed</i> is how fast it loops.</li>
+        <li>Can't decide? Smash <b>🎲 Surprise me</b>.</li>
+        <li>Picture wiggling off the edge? Tick <b>Stay in frame</b> and it zooms to fit the whole wiggle. Tap the rainbow dot to pick any background colour.</li>
+        <li><b>Hold down on the picture</b> (or click it and hold Space) to compare with the original.</li>
+        <li><b>Save it.</b> Pick a size, then hit <i>Download GIF</i>. It loops forever, so it's perfect for chats and posts. <i>Download video</i> records a short clip instead (handy where GIFs aren't welcome). On phones, <i>Share</i> sends the GIF straight to your apps.</li>
+      </ol>
+      <p class="fine">With the see-through background, GIFs keep their transparency (edges get a little jagged, that's GIFs for you). Videos can't be see-through, so they get a white background. Videos record in real time (a few seconds), so keep this tab open until it's done.</p>
+      <p class="fine">Everything happens right here in your browser. Your pictures never leave your device.</p>
+    </div>
+  </div>
+
+  <script src="lib/glfx.js"></script>
+  <script src="lib/gifenc.js"></script>
+  <script src="lib/sample.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

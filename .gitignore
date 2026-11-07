@@ -1,0 +1,30 @@
+# Old prototypes and notes, kept locally for reference only
+old wip/
+
+# Release builds (made by build_release.bat)
+dist/
+
+# Trailer: the music may not be distributed on its own (YouTube Audio Library
+# licence), and the rendered videos live on YouTube. trailer.md stays.
+trailer/*.mp3
+trailer/*.wav
+trailer/*.mp4
+
+# Claude Code / tooling
+.claude/
+node_modules/
+__pycache__/
+*.pyc
+
+# Test and render outputs
+testing/shots/
+testing/out/
+promo/_download/
+
+# OS and editor clutter
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+*.tmp
+*.log

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!-- Poster template for the itch cover and thumbnail. promo-shots.js loads it and calls
+     build(layout, heroFrames, stickers) with wiggled frames rendered by the app. -->
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=block" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    position: relative;
+    font-family: "Fredoka", "Comic Sans MS", sans-serif;
+    background:
+      radial-gradient(circle at 70% 55%, rgba(255,255,255,.55), transparent 55%),
+      repeating-conic-gradient(from 0deg at 70% 55%, #ffd60a 0deg 9deg, #ffe45c 9deg 18deg);
+  }
+  body::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(242,183,5,.55) 3px, transparent 3.5px);
+    background-size: 30px 30px;
+    mask-image: linear-gradient(90deg, #000 0%, transparent 60%);
+  }
+  .outlined {
+    color: #fff;
+    -webkit-text-stroke: var(--stroke) #2d2a12;
+    paint-order: stroke fill;
+    text-shadow: 0 var(--drop) 0 #2d2a12, 0 calc(var(--drop) * 2) 20px rgba(0,0,0,.25);
+    line-height: .92;
+    letter-spacing: .01em;
+  }
+  .title { position: absolute; z-index: 5; }
+  .title .w { display: block; color: #fff; }
+  .title .w.big { color: #fff; }
+  .title .w.zest { color: #ff8a3d; }
+  .hero { position: absolute; z-index: 3; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero img.ghost1 { opacity: .22; transform: translate(-7%, 3%) rotate(-6deg); }
+  .hero img.ghost2 { opacity: .4; transform: translate(-3.5%, 1.5%) rotate(-3deg); }
+  .hero img.main { filter: drop-shadow(0 14px 0 rgba(45,42,18,.85)) drop-shadow(0 24px 30px rgba(0,0,0,.25)); }
+  .tag {
+    position: absolute; z-index: 6;
+    background: #2d2a12; color: #ffe45c;
+    border-radius: 999px; font-weight: 700; white-space: nowrap;
+    box-shadow: 0 6px 0 rgba(0,0,0,.25);
+  }
+  .tag b { color: #fff; }
+  .badges { position: absolute; z-index: 6; display: flex; gap: 12px; }
+  .badge {
+    background: #fff; color: #2d2a12; border: 4px solid #2d2a12; border-radius: 16px;
+    font-weight: 700; white-space: nowrap; box-shadow: 0 5px 0 #2d2a12;
+  }
+  .badge.leaf { background: #4caf50; color: #fff; }
+  .badge.zest { background: #ff8a3d; color: #fff; }
+  .sticker {
+    position: absolute; z-index: 4;
+    background: #fff; border: 5px solid #2d2a12; border-radius: 22px;
+    box-shadow: 0 7px 0 #2d2a12;
+    display: grid; place-items: center; overflow: hidden;
+  }
+  .sticker { padding: 8px; }
+  .sticker img { width: 100%; height: 100%; object-fit: contain; }
+  .swoosh { position: absolute; z-index: 2; fill: none; stroke: rgba(45,42,18,.5); stroke-linecap: round; stroke-dasharray: 1 22; }
+  .swoosh path { vector-effect: non-scaling-stroke; }
+
+  /* ---- Cover 1280×720 ---- */
+  body.cover .title { left: 50px; top: 42px; --stroke: 18px; --drop: 9px; }
+  body.cover .title .big { font-size: 196px; }
+  body.cover .title .mid { font-size: 134px; }
+  body.cover .title .small { font-size: 86px; margin-top: 4px; }
+  body.cover .hero { width: 640px; height: 640px; right: 10px; top: 50px; }
+  body.cover .tag { left: 50px; top: 552px; font-size: 38px; padding: 12px 30px; }
+  body.cover .badges { left: 50px; top: 636px; }
+  body.cover .badge { font-size: 28px; padding: 6px 18px; }
+  body.cover .swoosh { right: 40px; top: 40px; width: 640px; height: 640px; stroke-width: 9px; }
+
+  /* ---- itch thumbnail 630×500 ---- */
+  body.itch_thumbnail { background:
+      radial-gradient(circle at 62% 70%, rgba(255,255,255,.55), transparent 55%),
+      repeating-conic-gradient(from 0deg at 62% 70%, #ffd60a 0deg 9deg, #ffe45c 9deg 18deg); }
+  body.itch_thumbnail .title { left: 24px; top: 18px; --stroke: 12px; --drop: 6px; }
+  body.itch_thumbnail .title .big { font-size: 118px; }
+  body.itch_thumbnail .title .mid { font-size: 80px; }
+  body.itch_thumbnail .title .small { font-size: 50px; margin-top: 2px; }
+  body.itch_thumbnail .hero { width: 360px; height: 360px; right: -14px; top: 150px; }
+  body.itch_thumbnail .tag { left: 20px; top: 392px; font-size: 36px; padding: 10px 26px; }
+  body.itch_thumbnail .badges { display: none; }
+  body.itch_thumbnail .swoosh { display: none; }
+</style>
+</head>
+<body>
+<script>
+function build(layout, hero, stickers) {
+  document.body.className = layout;
+  const cover = layout === 'cover';
+  const html = [];
+  html.push(`<div class="title outlined"><span class="w big">WIGGLE</span><span class="w mid">MY IMAGE</span><span class="w small zest">ANIMATOR</span></div>`);
+  html.push(`<svg class="swoosh" viewBox="0 0 100 100"><path d="M10 50 C10 20 40 20 50 50 S90 80 90 50 S60 20 50 50 S10 80 10 50" /></svg>`);
+  html.push(`<div class="hero"><img class="ghost1" src="${hero[2].src}"><img class="ghost2" src="${hero[1].src}"><img class="main" src="${hero[0].src}"></div>`);
+  html.push(cover
+    ? `<div class="tag">Drop a picture <b>→</b> it wiggles <b>→</b> save a GIF!</div>`
+    : `<div class="tag">Make any picture wiggle! <b>🍋</b></div>`);
+  html.push(`<div class="badges"><span class="badge">8 wiggle styles</span><span class="badge leaf">GIF + video</span><span class="badge zest">Web app</span></div>`);
+  // Stickers: [x, y, max width, max height, rotation] per layout, sample frames wiggled by the app.
+  // Each card takes its picture's shape (fitted in that box), so wide pictures get wide cards.
+  const spots = cover
+    ? [[965, 12, 105, 130, -8], [1125, 14, 135, 135, 9], [1062, 588, 200, 115, -7], [812, 598, 220, 110, 6]]
+    : [[512, 14, 90, 115, 9], [236, 262, 86, 86, -9]];
+  spots.forEach(([x, y, mw, mh, r], i) => {
+    const { src, w, h } = stickers[i];
+    const k = Math.min(mw / w, mh / h);
+    html.push(`<div class="sticker" style="left:${x}px;top:${y}px;width:${Math.round(w * k)}px;height:${Math.round(h * k)}px;transform:rotate(${r}deg)"><img src="${src}"></div>`);
+  });
+  document.body.insertAdjacentHTML('beforeend', html.join(''));
+}
+</script>
+</body>
+</html>
